@@ -15,6 +15,7 @@ module.exports = function(input) {
         console.log(chalk.bold.red('WARNING: \t no input provided!'));
         return;
     }
+
     var instream = fs.createReadStream(input);
     var outstream = new stream;
     outstream.readable = true;
@@ -27,15 +28,22 @@ module.exports = function(input) {
 
     // store for records in error
     var flaggedRecords = [];
-    // tracks how many records we've processed
+    // tracks how many records we've processed which are unaffected
     var okRecords = 0;
     // matches data between to square brackets i.e [ some date ]
     var regEx =/\[(.*)\]/;
 
     rl.on('line', function(line) {
 
-        // prepare the log txt date for xml parsing
-        var xmlData = line.match(regEx)[1];
+        // prepare the log txt data for xml parsing
+        var xmlData;
+
+        try {
+            xmlData = line.match(regEx)[1];
+        } catch (e) {
+            console.log(chalk.bold.red('ERROR: \t', e.message));
+            return
+        }
 
         parseString(xmlData, function (err, result) {
 
@@ -63,7 +71,7 @@ module.exports = function(input) {
                 }
                 flaggedRecords.push(flagRecord);
             } else {
-                okRecords +=1;
+                okRecords += 1;
             }
         });
     }).on('close', function() {
