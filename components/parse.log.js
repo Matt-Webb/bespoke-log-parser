@@ -9,7 +9,7 @@ var stream = require('stream');
 var parseString  = require('xml2js').parseString;
 var chalk = require('chalk');
 
-module.exports = function(input) {
+module.exports = function parser(input) {
 
     if(!input){
         console.log(chalk.bold.red('WARNING: \t no input provided!'));
